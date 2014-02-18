@@ -52,9 +52,23 @@ class UserGroup(multiprocessing.Process):
         self.rampup = rampup
         self.start_time = time.time()
 
+        self.script_module = load_script(self.script_file)
+
+        # Get an optional description out of our script file's "description" method
+        self.description = self.retrieve_optional_description()
+
+    def retrieve_optional_description(self):
+        transaction = self.script_module.Transaction()
+        desc_method = getattr(transaction, 'description', None)
+        if desc_method and callable(desc_method):
+            return transaction.description()
+        return ""
+
+
     def run(self):
         # -- ENSURE: (Re-)Import script_module in forked Process
         script_module = load_script(self.script_file)
+
         threads = []
         for i in range(self.num_threads):
             spacing = float(self.rampup) / float(self.num_threads)

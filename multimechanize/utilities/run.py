@@ -94,6 +94,8 @@ def run_test(project_name, cmd_opts, remote_starter=None):
         script_file = os.path.join(script_prefix, ug_config.script_file)
         ug = core.UserGroup(queue, i, ug_config.name, ug_config.num_threads,
                             script_file, run_time, rampup)
+        # make all UserGroupConfig objects have the description of our UserGroup objects
+        ug_config.description = ug.description
         user_groups.append(ug)
     for user_group in user_groups:
         user_group.start()
@@ -136,6 +138,7 @@ def run_test(project_name, cmd_opts, remote_starter=None):
 
     # all agents are done running at this point
     time.sleep(.2) # make sure the writer queue is flushed
+
     print '\n\nanalyzing results...\n'
     results.output_results(output_dir, 'results.csv', run_time, rampup, results_ts_interval, user_group_configs, xml_report)
     print 'created: %sresults.html\n' % output_dir
@@ -218,7 +221,7 @@ def configure(project_name, cmd_opts, config_file=None):
             threads = config.getint(section, 'threads')
             script = config.get(section, 'script')
             user_group_name = section
-            ug_config = UserGroupConfig(threads, user_group_name, script)
+            ug_config = UserGroupConfig(threads, user_group_name, script, 'no description')
             user_group_configs.append(ug_config)
 
     return (run_time, rampup, results_ts_interval, console_logging, progress_bar, results_database, post_run_script, xml_report, user_group_configs)
@@ -226,11 +229,11 @@ def configure(project_name, cmd_opts, config_file=None):
 
 
 class UserGroupConfig(object):
-    def __init__(self, num_threads, name, script_file):
+    def __init__(self, num_threads, name, script_file, description):
         self.num_threads = num_threads
         self.name = name
         self.script_file = script_file
-
+        self.description = description
 
 
 if __name__ == '__main__':

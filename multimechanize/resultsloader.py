@@ -56,15 +56,17 @@ class UserGroupConfig(Base):
     user_group = Column(String(50), nullable=False)
     threads = Column(Integer, nullable=False)
     script = Column(String(50), nullable=False)
+    description = Column(String(255))
 
-    def __init__(self, user_group=None, threads=None, script=None):
+    def __init__(self, user_group=None, threads=None, script=None, description=None):
         self.user_group = str(user_group)
         self.threads = int(threads)
         self.script = str(script)
+        self.description = str(description)
 
     def __repr__(self):
-        return "<UserGroupConfig('%s','%s','%s')>" % (
-                self.user_group, self.threads, self.script)
+        return "<UserGroupConfig('%s','%s','%s','%s')>" % (
+                self.user_group, self.threads, self.script, self.description)
 
 class ResultRow(Base):
     """class representing a multi-mechanize results.csv row"""
